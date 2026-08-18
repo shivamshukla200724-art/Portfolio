@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050505" />
+
+  <title>Shivam Shukla — Digital Creator</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
+
+    :root {
+      --accent: #b9fff1;
+      --accent-dark: #62cdbd;
+      --text: #f6f6f1;
+      --muted: rgba(246, 246, 241, .68);
+      --dark: #050505;
+      --mx: 0px;
+      --my: 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--dark);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    #site {
+      position: relative;
+      width: 100vw;
+      height: 100svh;
+      overflow: hidden;
+      background: #050505;
+      isolation: isolate;
+    }
+
+    /* Full-screen visual scenes */
+    .scene {
+      position: absolute;
+      inset: -35px;
+      z-index: -5;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.12) translate(0, 0);
+      filter: blur(12px) saturate(.85);
+      background-size: cover;
+      background-position: center;
+      transition:
+        opacity 900ms ease,
+        transform 1500ms cubic-bezier(.2, .75, .2, 1),
+        filter 1100ms ease;
+    }
+
+    .scene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.66), rgba(0,0,0,.06) 75%),
+        linear-gradient(0deg, rgba(0,0,0,.7), transparent 45%);
+    }
+
+    .scene.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1.05) translate(var(--mx), var(--my));
+      filter: blur(0) saturate(1);
+    }
+
+    /* Demo backgrounds. Replace these with your own photos/videos later. */
+    .scene-0 {
+      background-image:
+        url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=2200&q=85");
+    }
+
+    .scene-1 {
+      background-image:
+        url("https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=2200&q=85");
+    }
+
+    .scene-2 {
+      background-image:
+        url("https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=2200&q=85");
+    }
+
+    .scene-3 {
+      background-image:
+        url("https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=2200&q=85");
+    }
+
+    .scene-4 {
+      background-image:
+        url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2200&q=85");
+    }
+
+    /* Dark cinematic overlays */
+    .shade {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          ellipse at center,
+          transparent 20%,
+          rgba(0,0,0,.23) 65%,
+          rgba(0,0,0,.72)
+        ),
+        linear-gradient(
+          180deg,
+          rgba(0,0,0,.68),
+          transparent 28%,
+          transparent 65%,
+          rgba(0,0,0,.75)
+        );
+    }
+
+    .grain {
+      position: absolute;
+      inset: -100%;
+      z-index: 5;
+      opacity: .08;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+      animation: grain .22s steps(2) infinite;
+    }
+
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      opacity: .08;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0,
+        transparent 3px,
+        rgba(255,255,255,.08) 4px
+      );
+    }
+
+    @keyframes grain {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(3%, -2%); }
+      50% { transform: translate(-2%, 3%); }
+      75% { transform: translate(2%, 2%); }
+      100% { transform: translate(-3%, -3%); }
+    }
+
+    /* Header */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 5vw;
+    }
+
+    .brand {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: .12em;
+      font-size: 13px;
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .top-info {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .menu-button {
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 100%;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      background: rgba(0,0,0,.22);
+      color: white;
+      cursor: pointer;
+    }
+
+    .menu-button span,
+    .menu-button span::before,
+    .menu-button span::after {
+      display: block;
+      width: 14px;
+      height: 1px;
+      background: white;
+      content: "";
+      transition: .25s;
+    }
+
+    .menu-button span::before {
+      transform: translateY(-5px);
+    }
+
+    .menu-button span::after {
+      transform: translateY(4px);
+    }
+
+    /* Main content */
+    .content {
+      position: relative;
+      z-index: 7;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 100px 25px 170px;
+      pointer-events: none;
+    }
+
+    .copy {
+      max-width: 1000px;
+      pointer-events: auto;
+      animation: copy-in 850ms cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .copy.changing {
+      animation: copy-out 400ms ease both;
+    }
+
+    @keyframes copy-in {
+      from {
+        opacity: 0;
+        transform: translateY(28px) scale(.97);
+        filter: blur(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes copy-out {
+      to {
+        opacity: 0;
+        transform: translateY(-20px) scale(1.03);
+        filter: blur(8px);
+      }
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(64px, 12vw, 170px);
+      line-height: .82;
+      letter-spacing: -.075em;
+      font-weight: 500;
+      text-shadow: 0 10px 50px rgba(0,0,0,.35);
+    }
+
+    h1 em {
+      color: var(--accent);
+      font-family: "Playfair Display", serif;
+      font-weight: 500;
+      letter-spacing: -.08em;
+    }
+
+    .description {
+      max-width: 470px;
+      margin: 30px auto 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* Bottom control */
+    .bottom {
+      position: absolute;
+      left: 50%;
+      bottom: 34px;
+      z-index: 10;
+      transform: translateX(-50%);
+      width: min(590px, calc(100% - 40px));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .explore {
+      position: relative;
+      overflow: hidden;
+      min-width: 230px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 100px;
+      padding: 14px 23px;
+      background: rgba(0,0,0,.52);
+      color: white;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: .25s;
+    }
+
+    .explore:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px rgba(185,255,241,.18);
+      transform: translateY(-2px);
+    }
+
+    .hold-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: var(--accent);
+      transition: width .05s linear;
+    }
+
+    .counter {
+      position: absolute;
+      right: 0;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .16em;
+    }
+
+    .counter strong {
+      color: var(--text);
+    }
+
+    .side-note {
+      position: absolute;
+      left: 5vw;
+      bottom: 37px;
+      z-index: 10;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .side-note::before {
+      content: "";
+      display: inline-block;
+      width: 28px;
+      height: 1px;
+      margin: 0 10px 3px 0;
+      background: var(--accent);
+    }
+
+    .socials {
+      position: absolute;
+      right: 5vw;
+      bottom: 37px;
+      z-index: 10;
+      display: flex;
+      gap: 14px;
+    }
+
+    .socials a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      transition: .2s;
+    }
+
+    .socials a:hover {
+      color: var(--accent);
+    }
+
+    /* Menu overlay */
+    .menu-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 15;
+      display: grid;
+      place-items: center;
+      background: rgba(3,3,3,.88);
+      opacity: 0;
+      visibility: hidden;
+      transition: .35s;
+    }
+
+    .menu-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .menu-links {
+      display: grid;
+      gap: 13px;
+      text-align: center;
+    }
+
+    .menu-links button {
+      border: 0;
+      background: none;
+      color: white;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(42px, 8vw, 85px);
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .menu-links button:hover {
+      color: var(--accent);
+      transform: skewX(-8deg);
+    }
+
+    .close-menu {
+      position: absolute;
+      right: 5vw;
+      top: 28px;
+      border: 1px solid rgba(255,255,255,.35);
+      background: none;
+      color: white;
+      border-radius: 100%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    @media (max-width: 650px) {
+      header {
+        padding: 22px 20px;
+      }
+
+      .top-info {
+        gap: 10px;
+        font-size: 8px;
+      }
+
+      .content {
+        padding: 95px 20px 150px;
+      }
+
+      h1 {
+        font-size: clamp(62px, 18vw, 110px);
+      }
+
+      .description {
+        font-size: 14px;
+        margin-top: 25px;
+      }
+
+      .side-note {
+        left: 20px;
+        bottom: 26px;
+        font-size: 8px;
+      }
+
+      .socials {
+        right: 20px;
+        bottom: 26px;
+      }
+
+      .socials a {
+        font-size: 9px;
+      }
+
+      .bottom {
+        bottom: 68px;
+      }
+
+      .counter {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site">
+    <div class="scene scene-0 active"></div>
+    <div class="scene scene-1"></div>
+    <div class="scene scene-2"></div>
+    <div class="scene scene-3"></div>
+    <div class="scene scene-4"></div>
+
+    <div class="shade"></div>
+    <div class="grain"></div>
+    <div class="scanlines"></div>
+
+    <header>
+      <a class="brand" href="#" id="brand">SHIVAM<span>®</span></a>
+
+      <div class="top-info">
+        <span id="location">New Delhi / India</span>
+        <span id="date"></span>
+        <button class="menu-button" id="menuButton" aria-label="Open menu">
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="copy" id="copy">
+        <div class="eyebrow" id="eyebrow">Independent digital creator</div>
+
+        <h1 id="title">
+          Shivam<br>
+          <em>Shukla.</em>
+        </h1>
+
+        <p class="description" id="description">
+          Web developer, video editor and AI automation builder.
+          I create digital experiences that feel different.
+        </p>
+      </div>
+    </main>
+
+    <div class="side-note" id="sideNote">
+      Move cursor / swipe to explore
+    </div>
+
+    <div class="socials">
+      <a href="mailto:shivamshukla200724@gmail.co">Email</a>
+      <a href="#" onclick="return false;">Instagram</a>
+      <a href="#" onclick="return false;">GitHub</a>
+    </div>
+
+    <div class="bottom">
+      <button class="explore" id="exploreButton">
+        <span id="buttonText">Tap & hold to explore</span>
+        <span class="hold-progress" id="holdProgress"></span>
+      </button>
+
+      <div class="counter">
+        <strong id="currentNumber">01</strong> / 05
+      </div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay">
+      <button class="close-menu" id="closeMenu">×</button>
+
+      <div class="menu-links">
+        <button data-index="0">Home</button>
+        <button data-index="1">Web Developer</button>
+        <button data-index="2">Video Editor</button>
+        <button data-index="3">AI Automations</button>
+        <button data-index="4">Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slides = [
+      {
+        eyebrow: "Independent digital creator",
+        title: "Shivam<br><em>Shukla.</em>",
+        description:
+          "Web developer, video editor and AI automation builder. I create digital experiences that feel different.",
+        note: "Move cursor / swipe to explore",
+        accent: "#b9fff1"
+      },
+      {
+        eyebrow: "01 / Web development",
+        title: "Build<br><em>better.</em>",
+        description:
+          "I design and build responsive websites, landing pages and interactive experiences for modern brands.",
+        note: "Websites with personality",
+        accent: "#a9e9ff"
+      },
+      {
+        eyebrow: "02 / Video editing",
+        title: "Cut<br><em>stories.</em>",
+        description:
+          "Short-form videos, reels and visual edits made to hold attention and communicate clearly.",
+        note: "Frames that speak",
+        accent: "#ffb6d5"
+      },
+      {
+        eyebrow: "03 / AI automation",
+        title: "Make work<br><em>flow.</em>",
+        description:
+          "Smart AI-powered workflows that reduce repetitive tasks and connect your everyday tools.",
+        note: "Automate the ordinary",
+        accent: "#d3b8ff"
+      },
+      {
+        eyebrow: "04 / Let's work together",
+        title: "Have an<br><em>idea?</em>",
+        description:
+          "Tell me what you want to build. I would love to help turn your idea into a useful digital experience.",
+        note: "Available for selected projects",
+        accent: "#ffe3a8"
+      }
+    ];
+
+    const site = document.getElementById("site");
+    const scenes = document.querySelectorAll(".scene");
+    const copy = document.getElementById("copy");
+    const eyebrow = document.getElementById("eyebrow");
+    const title = document.getElementById("title");
+    const description = document.getElementById("description");
+    const sideNote = document.getElementById("sideNote");
+    const currentNumber = document.getElementById("currentNumber");
+    const buttonText = document.getElementById("buttonText");
+    const exploreButton = document.getElementById("exploreButton");
+    const holdProgress = document.getElementById("holdProgress");
+
+    let current = 0;
+    let isChanging = false;
+    let wheelLocked = false;
+    let holdStart = null;
+    let holdAnimation = null;
+
+    function updateDate() {
+      const date = new Date();
+      document.getElementById("date").textContent =
+        date.toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        });
+    }
+
+    updateDate();
+
+    function changeSlide(index) {
+      if (isChanging) return;
+
+      index = Math.max(0, Math.min(slides.length - 1, index));
+      if (index === current) return;
+
+      isChanging = true;
+      const data = slides[index];
+
+      copy.classList.add("changing");
+
+      setTimeout(() => {
+        scenes[current].classList.remove("active");
+        scenes[index].classList.add("active");
+
+        eyebrow.textContent = data.eyebrow;
+        title.innerHTML = data.title;
+        description.textContent = data.description;
+        sideNote.textContent = data.note;
+        currentNumber.textContent = String(index + 1).padStart(2, "0");
+
+        document.documentElement.style.setProperty("--accent", data.accent);
+
+        if (index === slides.length - 1) {
+          buttonText.textContent = "Email Shivam ✉";
+          exploreButton.onclick = () => {
+            window.location.href =
+              "mailto:shivamshukla200724@gmail.co";
+          };
+        } else {
+          buttonText.textContent = "Tap & hold to explore";
+          exploreButton.onclick = null;
+        }
+
+        current = index;
+        copy.classList.remove("changing");
+        isChanging = false;
+      }, 350);
+    }
+
+    function nextSlide() {
+      changeSlide(current + 1 >= slides.length ? 0 : current + 1);
+    }
+
+    function previousSlide() {
+      changeSlide(current - 1 < 0 ? slides.length - 1 : current - 1);
+    }
+
+    // Mouse parallax
+    window.addEventListener("pointermove", (event) => {
+      const x = (event.clientX / window.innerWidth - .5) * 18;
+      const y = (event.clientY / window.innerHeight - .5) * 12;
+
+      document.documentElement.style.setProperty("--mx", `${x}px`);
+      document.documentElement.style.setProperty("--my", `${y}px`);
+    });
+
+    // Mouse wheel / trackpad
+    window.addEventListener(
+      "wheel",
+      (event) => {
+        if (wheelLocked) return;
+
+        wheelLocked = true;
+
+        if (event.deltaY > 0) {
+          nextSlide();
+        } else {
+          previousSlide();
+        }
+
+        setTimeout(() => {
+          wheelLocked = false;
+        }, 850);
+      },
+      { passive: true }
+    );
+
+    // Keyboard
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        nextSlide();
+      }
+
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        previousSlide();
+      }
+    });
+
+    // Touch swipe
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    site.addEventListener(
+      "touchstart",
+      (event) => {
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+      },
+      { passive: true }
+    );
+
+    site.addEventListener(
+      "touchend",
+      (event) => {
+        const endX = event.changedTouches[0].clientX;
+        const endY = event.changedTouches[0].clientY;
+
+        const diffX = endX - touchStartX;
+        const diffY = endY - touchStartY;
+
+        if (Math.abs(diffY) > 45 && Math.abs(diffY) > Math.abs(diffX)) {
+          if (diffY < 0) nextSlide();
+          else previousSlide();
+        }
+      },
+      { passive: true }
+    );
+
+    // Tap-and-hold effect
+    function startHold() {
+      if (current === slides.length - 1) return;
+
+      holdStart = performance.now();
+      exploreButton.classList.add("holding");
+
+      function animateHold(now) {
+        const elapsed = now - holdStart;
+        const percentage = Math.min((elapsed / 850) * 100, 100);
+
+        holdProgress.style.width = percentage + "%";
+
+        if (percentage >= 100) {
+          holdProgress.style.width = "0%";
+          exploreButton.classList.remove("holding");
+          nextSlide();
+          holdAnimation = null;
+          return;
+        }
+
+        holdAnimation = requestAnimationFrame(animateHold);
+      }
+
+      holdAnimation = requestAnimationFrame(animateHold);
+    }
+
+    function stopHold() {
+      if (holdAnimation) {
+        cancelAnimationFrame(holdAnimation);
+        holdAnimation = null;
+      }
+
+      holdProgress.style.width = "0%";
+      exploreButton.classList.remove("holding");
+    }
+
+    exploreButton.addEventListener("pointerdown", startHold);
+    exploreButton.addEventListener("pointerup", stopHold);
+    exploreButton.addEventListener("pointerleave", stopHold);
+    exploreButton.addEventListener("pointercancel", stopHold);
+
+    // Menu
+    const menuButton = document.getElementById("menuButton");
+    const menuOverlay = document.getElementById("menuOverlay");
+    const closeMenu = document.getElementById("closeMenu");
+
+    menuButton.addEventListener("click", () => {
+      menuOverlay.classList.add("open");
+    });
+
+    closeMenu.addEventListener("click", () => {
+      menuOverlay.classList.remove("open");
+    });
+
+    document.querySelectorAll(".menu-links button").forEach((button) => {
+      button.addEventListener("click", () => {
+        changeSlide(Number(button.dataset.index));
+        menuOverlay.classList.remove("open");
+      });
+    });
+  </script>
+</body>
+</html>
